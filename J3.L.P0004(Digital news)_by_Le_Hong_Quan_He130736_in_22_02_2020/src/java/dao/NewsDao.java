@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jdbc.DBContext;
@@ -69,7 +70,6 @@ public class NewsDao extends DBContext {
      * getTop1NewsById.<br>
      * Lấy ra bài báo đầu tiên theo id.
      * 
-     * @param id
      * @return a News
      */
     public News getTop1NewsById() {
@@ -102,8 +102,8 @@ public class NewsDao extends DBContext {
      * @param pagesize
      * @return a list News
      */
-    public ArrayList<News> searchNewsByTitle(String title,int pageindex, int pagesize) {
-        ArrayList<News> listNews = new ArrayList<>();
+    public List<News> searchNewsByTitle(String title,int pageindex, int pagesize) {
+        List<News> listNews = new ArrayList<>();
         
         String sql = "SELECT * FROM(SELECT *,ROW_NUMBER() OVER (ORDER BY id ASC) as row_num "
                 + "FROM dbo.News WHERE title LIKE ?) AS news WHERE row_num >= (? - 1)*? +1 AND row_num<= ? * ?";
@@ -163,8 +163,8 @@ public class NewsDao extends DBContext {
      * 
      * @return a list new
      */
-    public ArrayList<News> getTop5NewsRecent() {
-        ArrayList<News> listNews = new ArrayList<>();
+    public List<News> getTop5NewsRecent() {
+        List<News> listNews = new ArrayList<>();
         String sql = "SELECT TOP(5)* FROM News ORDER BY date DESC";
         try (PreparedStatement statement = connection.prepareStatement(sql);) {
             

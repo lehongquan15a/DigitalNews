@@ -11,6 +11,7 @@ import entity.News;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -64,7 +65,7 @@ public class SearchController extends HttpServlet {
                 String page_raw = request.getParameter("page");
                 int pageCount = dao.countNewsWhenSearch(text);
                 pageCount = (pageCount % pagesize == 0) ? pageCount / pagesize : pageCount / pagesize + 1;
-                ArrayList<Integer> listCount = new ArrayList<>();
+                List<Integer> listCount = new ArrayList<>();
                 for (int i = 1; i <= pageCount; i++) {
                     listCount.add(i);
                 }
@@ -73,8 +74,8 @@ public class SearchController extends HttpServlet {
                 }
                 int pageindex = Integer.parseInt(page_raw);
 
-                ArrayList<News> listNews = dao.searchNewsByTitle(text, pageindex, pagesize);
-                ArrayList<News> listTop5 = dao.getTop5NewsRecent();
+                List<News> listNews = dao.searchNewsByTitle(text, pageindex, pagesize);
+                List<News> listTop5 = dao.getTop5NewsRecent();
                 request.setAttribute("page", pageindex);
                 request.setAttribute("text", text);
                 request.setAttribute("listNews", listNews);

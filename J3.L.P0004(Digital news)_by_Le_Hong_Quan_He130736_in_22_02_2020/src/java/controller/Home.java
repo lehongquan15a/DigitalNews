@@ -11,7 +11,7 @@ import dao.NewsDao;
 import entity.News;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -67,7 +67,7 @@ public class Home extends HttpServlet {
             }
             
             //Gọi phương thức getTop5NewsRecent để lấy ra top 5 bài báo gần đây
-            ArrayList<News> listTop5 = dao.getTop5NewsRecent();
+            List<News> listTop5 = dao.getTop5NewsRecent();
 
             request.setAttribute("currentNew", currentNew);
             request.setAttribute("listTop5", listTop5);
