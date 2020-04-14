@@ -42,13 +42,15 @@ public class NewsDao extends DBContext {
      * @param id
      * @return a News
      */
+    private PreparedStatement statement;
+    private ResultSet rs;
     public News getNewById(int id) {
         String sql = "SELECT * FROM dbo.News WHERE id =?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            
-
+        try{
+            connection=getConnection();
+            statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
-            ResultSet rs = statement.executeQuery();
+            rs = statement.executeQuery();
             if (rs.next()) {
                 News n = new News();
                 n.setId(rs.getInt("id"));
@@ -62,6 +64,8 @@ public class NewsDao extends DBContext {
             }
         } catch (SQLException ex) {
             Logger.getLogger(NewsDao.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            close(connection, statement, rs);
         }
         return null;
     }
@@ -74,8 +78,10 @@ public class NewsDao extends DBContext {
      */
     public News getTop1NewsById() {
         String sql = "SELECT TOP(1)* FROM dbo.News ORDER BY id ASC";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            ResultSet rs = statement.executeQuery();
+        try{
+            connection=getConnection();
+            statement = connection.prepareStatement(sql);
+            rs = statement.executeQuery();
             if (rs.next()) {
                 News n = new News();
                 n.setId(rs.getInt("id"));
@@ -88,7 +94,7 @@ public class NewsDao extends DBContext {
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(NewsDao.class.getName()).log(Level.SEVERE, null, ex);
+            close(connection, statement, rs);
         }
         return null;
     }
@@ -107,9 +113,10 @@ public class NewsDao extends DBContext {
         
         String sql = "SELECT * FROM(SELECT *,ROW_NUMBER() OVER (ORDER BY id ASC) as row_num "
                 + "FROM dbo.News WHERE title LIKE ?) AS news WHERE row_num >= (? - 1)*? +1 AND row_num<= ? * ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql);) {
+        try {
             
-            
+            connection=getConnection();
+            statement = connection.prepareStatement(sql);
             
             statement.setString(1, "%" + title + "%");
             
@@ -118,7 +125,7 @@ public class NewsDao extends DBContext {
             statement.setInt(4, pageindex);
             statement.setInt(5, pagesize);
             
-            ResultSet rs = statement.executeQuery();
+            rs = statement.executeQuery();
             while (rs.next()) {
                 News n = new News();
                 n.setId(rs.getInt("id"));
@@ -132,6 +139,8 @@ public class NewsDao extends DBContext {
             }
         } catch (SQLException ex) {
             Logger.getLogger(NewsDao.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            close(connection, statement, rs);
         }
         return listNews;
     }
@@ -144,16 +153,19 @@ public class NewsDao extends DBContext {
      */
     public int countNewsWhenSearch(String title){
         String sql = "SELECT COUNT(*) FROM dbo.News WHERE title LIKE ?";
-         try (PreparedStatement statement = connection.prepareStatement(sql);) {
-             
+         try {
+            connection=getConnection();
+            statement = connection.prepareStatement(sql);
              
             statement.setString(1, "%" + title + "%");
-            ResultSet rs = statement.executeQuery();
+            rs = statement.executeQuery();
             if (rs.next()) {
                return rs.getInt(1);
             }
         } catch (SQLException ex) {
             Logger.getLogger(NewsDao.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            close(connection, statement, rs);
         }
          return -1;
     }
@@ -166,9 +178,10 @@ public class NewsDao extends DBContext {
     public List<News> getTop5NewsRecent() {
         List<News> listNews = new ArrayList<>();
         String sql = "SELECT TOP(5)* FROM News ORDER BY date DESC";
-        try (PreparedStatement statement = connection.prepareStatement(sql);) {
-            
-            ResultSet rs = statement.executeQuery();
+        try {
+            connection=getConnection();
+            statement = connection.prepareStatement(sql);
+            rs = statement.executeQuery();
             while (rs.next()) {
                 News n = new News();
                 n.setId(rs.getInt("id"));
@@ -182,6 +195,8 @@ public class NewsDao extends DBContext {
             }
         } catch (SQLException ex) {
             Logger.getLogger(NewsDao.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            close(connection, statement, rs);
         }
         return listNews;
     }

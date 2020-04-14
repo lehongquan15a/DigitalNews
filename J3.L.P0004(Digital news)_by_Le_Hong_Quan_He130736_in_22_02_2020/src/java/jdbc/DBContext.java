@@ -8,7 +8,9 @@ package jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,11 +31,12 @@ import java.util.logging.Logger;
 public class DBContext {
     protected Connection connection=null;
     /**
-     * Constructor.<br>
+     * getConnection.<br>
      * Mở kết nối tới SQLServer
      * Trường hợp gặp lỗi thực hiện exception.
+     * @return connection
      */
-    public DBContext()
+    public Connection getConnection()
     {
         try {
             // Edit URL , username, password to authenticate with your MS SQL Server
@@ -41,13 +44,33 @@ public class DBContext {
             String username = "sa";
             String password = "123456";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            connection = DriverManager.getConnection(url, username, password);
+            return DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
-    public static void main(String[] args) {
-        DBContext db = new DBContext();
-        System.out.println(db.connection);
+    /**
+     * close.<br>
+     * Đóng kết nối tới SQLServer
+     * Trường hợp gặp lỗi thực hiện exception.
+     * @param con
+     * @param st
+     * @param rs
+     */
+     public void close(Connection con, Statement st, ResultSet rs) {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+            if (st != null) {
+                st.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
